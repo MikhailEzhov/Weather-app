@@ -10,14 +10,25 @@ import DailyForecastMinimumData from '../dailyForecastMinimumData/DailyForecastM
 
 import DailyForecastMaximumData from '../dailyForecastMaximumData/DailyForecastMaximumData';
 
+import ErrorBoundary from '../errorBoundary/ErrorBoundary';
+
 
 
 const App = () => {
     return (
         <div>
             <AppHeader/>
-            <CurrentWeatherSearchForm/>
-            <CurrentWeatherMinimumData/>
+
+            <main>
+                <ErrorBoundary>
+                    <CurrentWeatherSearchForm/>
+                </ErrorBoundary>
+
+                <ErrorBoundary>
+                    <CurrentWeatherMaximumData/>
+                </ErrorBoundary>
+            </main>
+
         </div>
     )
 }
