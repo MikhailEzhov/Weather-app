@@ -1,0 +1,21 @@
+.header {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    text-align: center;
+
+    &__title {
+        padding-bottom: 15px;
+    }
+
+    &__list {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20%;
+    }
+
+    &__link {
+        font-size: 30px;
+        font-weight: 600;
+    }
+}
