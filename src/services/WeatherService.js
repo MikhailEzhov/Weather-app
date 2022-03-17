@@ -16,7 +16,7 @@ class WeatherService {
 
     // получить текущую погоду по городу
     getCurrentWeatherByCity = async (city = 'London') => {
-        const res = await this.getResource(`https://pi.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=9c28f87f8cae1531b8dab5b2f429f827`);
+        const res = await this.getResource(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=9c28f87f8cae1531b8dab5b2f429f827`);
         console.log(res)
         return this._transformCurrentWeather(res); // один объект
     }
