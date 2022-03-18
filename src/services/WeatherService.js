@@ -1,30 +1,24 @@
-class WeatherService {
+import useHttp from '../hooks/http.hook';
 
 
-    // получить ресурсы c url адреса
-    getResource = async (url) => {
-        let res = await fetch(url);
-        
-        if (!res.ok) {
-            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-        }
-        
-        return await res.json();
-    }
+// Кастомный хук, для данных полученных с API
+const useWeatherService = () => {
 
+
+    // подключаем сущьности из кастомного хука useHttp:
+    const {loading, error, request, clearError} = useHttp();
 
 
     // получить текущую погоду по городу
-    getCurrentWeatherByCity = async (city = 'London') => {
-        const res = await this.getResource(`https://pi.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=9c28f87f8cae1531b8dab5b2f429f827`);
+    const getCurrentWeatherByCity = async (city = 'London') => {
+        const res = await request(`https://pi.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=9c28f87f8cae1531b8dab5b2f429f827`);
         // console.log(res);
-        return this._transformCurrentWeather(res); // один объект
+        return _transformCurrentWeather(res);
     }
 
 
-
     // получает данные текущей погоды, трансформирует их, возвращает объект уже только с нужными данными:
-    _transformCurrentWeather = (currentWeather) => {
+    const _transformCurrentWeather = (currentWeather) => {
         return {
             name: currentWeather.name,
             country: currentWeather.sys.country,
@@ -40,17 +34,16 @@ class WeatherService {
 
 
 
-
     // получить почасовой прогноз по городу
-    getHourlyForecastByCity = async (city = 'London') => {
-        const res = await this.getResource(`https://pi.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&cnt=5&appid=9c28f87f8cae1531b8dab5b2f429f827`); 
-        console.log(res);
-        return this._transformHourlyForecast(res);
+    const getHourlyForecastByCity = async (city = 'London') => {
+        const res = await request(`https://pi.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&cnt=5&appid=9c28f87f8cae1531b8dab5b2f429f827`); 
+        // console.log(res);
+        return _transformHourlyForecast(res);
     }
 
 
     // получает данные почасового прогноза, трансформирует их, возвращает объект уже только с нужными данными:
-    _transformHourlyForecast = (hourlyForecast) => {
+    const _transformHourlyForecast = (hourlyForecast) => {
         return {
             name: hourlyForecast.city.name,
             country: hourlyForecast.city.country,
@@ -98,6 +91,8 @@ class WeatherService {
     }
 
 
+    return {loading, error, request, clearError, getCurrentWeatherByCity, getHourlyForecastByCity}; // возвращаем объект с необходимыми сущьностями их этого хука
+
 }
 
-export default WeatherService;
+export default useWeatherService;
