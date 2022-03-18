@@ -10,8 +10,8 @@ const AppHeader = () => {
 
                 <nav className="header__menu">
                     <ul className="header__list">
-                        <li className="header__link">Current Weather</li>
-                        <li className="header__link">Daily Forecast 7 days</li>
+                        <li className="header__link">Current weather</li>
+                        <li className="header__link">Hourly forecast</li>
                     </ul>
                 </nav>
             </div>
