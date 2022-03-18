@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
-import WeatherService from '../../services/WeatherService'; // подключили сетевую-сервисную часть
-
+import useWeatherService from '../../services/WeatherService'; // подключили кастомный хук, с трансформированными данными от API
 
 import './hourlyForecastData.scss';
 
@@ -14,12 +13,10 @@ const HourlyForecastMinimumData = () => {
 
     // состояния:
     const [hourlyForecast, setHourlyForecast] = useState(null);   // почасовой прогноз
-    const [loading, setLoading] = useState(true);                 // загрузка
-    const [error, setError] = useState(false);                    // ошибка
 
 
-    // переменная weatherService = создаёт экземпляр от класса:
-    const weatherService = new WeatherService();
+    // подключаем сущьности из кастомного хука useWeatherService:
+    const {loading, error, clearError, getHourlyForecastByCity} = useWeatherService();
 
 
     // эффект:
@@ -31,34 +28,16 @@ const HourlyForecastMinimumData = () => {
     // когда почасовой прогноз загрузился:
     const onHourlyForecastLoaded = (hourlyForecast) => {
         // меняем состояния:
-        setLoading(false);
         setHourlyForecast(hourlyForecast);
-    }
-
-
-    // когда почасовой прогноз загружается:
-    const onHourlyForecastLoading = () => {
-        // меняем состояния:
-        setLoading(true);
-    }
-
-
-    // когда ошибка:
-    const onError = () => {
-        // меняем состояния:
-        setError(error => true);
-        setLoading(loading => false);
     }
 
 
     // обновление почасового прогноза:
     const updateHourlyForecast = () => {
-        const city = 'Perm';   
-        onHourlyForecastLoading();           // loading изменится на true
-        weatherService                       // обращаемся к weatherService
-            .getHourlyForecastByCity(city)   // запускаем метод для получения почасового прогноза по городу
+        clearError();                        // очищаем ошибки, если они возникли когда данных с сервера не было
+        const city = 'Perm';
+        getHourlyForecastByCity(city)        // запускаем метод для получения почасового прогноза по городу
             .then(onHourlyForecastLoaded)    // при положительном ответе (запустится это)
-            .catch(onError);                 // при ошибке (запустится это)
     }
 
 
@@ -101,7 +80,7 @@ const View = ({hourlyForecast}) => { // принимает в себя объе�
         <table className="hourly-forecast__table">
             <thead>
                 <tr>
-                    <th colSpan="10" className="hourly-forecast__table-title">Hourly forecast in</th>
+                    <th colSpan="10" className="hourly-forecast__table-title">Hourly forecast in the default city</th>
                 </tr>
             </thead>
 

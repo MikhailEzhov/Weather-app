@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
-import WeatherService from '../../services/WeatherService'; // подключили сетевую-сервисную часть
+import useWeatherService from '../../services/WeatherService'; // подключили кастомный хук, с трансформированными данными от API
 
 import './currentWeatherData.scss';
 
@@ -13,12 +13,10 @@ const CurrentWeatherMinimumData = () => {
 
     // состояния:
     const [currentWeather, setCurrentWeather] = useState(null);   // текущая погода
-    const [loading, setLoading] = useState(true);                 // загрузка
-    const [error, setError] = useState(false);                    // ошибка
 
 
-    // переменная weatherService = создаёт экземпляр от класса:
-    const weatherService = new WeatherService();
+    // подключаем сущьности из кастомного хука useWeatherService:
+    const {loading, error, clearError, getCurrentWeatherByCity} = useWeatherService();
 
 
     // эффект:
@@ -30,34 +28,16 @@ const CurrentWeatherMinimumData = () => {
     // когда текущая погода загрузилась:
     const onCurrentWeatherLoaded = (currentWeather) => {
         // меняем состояния:
-        setLoading(false);
         setCurrentWeather(currentWeather);
-    }
-
-
-    // когда текущая погода загружается:
-    const onCurrentWeatherLoading = () => {
-        // меняем состояния:
-        setLoading(true);
-    }
-
-
-    // когда ошибка:
-    const onError = () => {
-        // меняем состояния:
-        setError(error => true);
-        setLoading(loading => false);
     }
 
 
     // обновление текущей погоды:
     const updateCurrentWeather = () => {
+        clearError();                        // очищаем ошибки, если они возникли когда данных с сервера не было
         const city = 'Perm';   
-        onCurrentWeatherLoading();           // loading изменится на true
-        weatherService                       // обращаемся к weatherService
-            .getCurrentWeatherByCity(city)   // запускаем метод для получения текущей погоды по городу
+        getCurrentWeatherByCity(city)        // запускаем метод для получения текущей погоды по городу
             .then(onCurrentWeatherLoaded)    // при положительном ответе (запустится это)
-            .catch(onError);                 // при ошибке (запустится это)
     }
 
 
@@ -88,7 +68,7 @@ const View = ({currentWeather}) => { // принимает в себя объе�
         <table className="current-weather__table">
             <thead>
                 <tr>
-                    <th colSpan="10" className="current-weather__table-title">Сurrent weather in</th>
+                    <th colSpan="10" className="current-weather__table-title">Current weather in the default city</th>
                 </tr>
             </thead>
 
