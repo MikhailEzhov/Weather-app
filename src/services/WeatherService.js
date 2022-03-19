@@ -11,7 +11,7 @@ const useWeatherService = () => {
 
     // получить текущую погоду по городу
     const getCurrentWeatherByCity = async (city = 'London') => {
-        const res = await request(`https://pi.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=9c28f87f8cae1531b8dab5b2f429f827`);
+        const res = await request(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=9c28f87f8cae1531b8dab5b2f429f827`);
         // console.log(res);
         return _transformCurrentWeather(res);
     }
@@ -36,7 +36,7 @@ const useWeatherService = () => {
 
     // получить почасовой прогноз по городу
     const getHourlyForecastByCity = async (city = 'London') => {
-        const res = await request(`https://pi.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&cnt=5&appid=9c28f87f8cae1531b8dab5b2f429f827`); 
+        const res = await request(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&cnt=5&appid=9c28f87f8cae1531b8dab5b2f429f827`); 
         // console.log(res);
         return _transformHourlyForecast(res);
     }

@@ -1,14 +1,15 @@
-import AppHeader from '../appHeader/AppHeader';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route
+} from "react-router-dom"; // подключили компоненты из пакета для маршрутизации
 
-import CurrentWeatherSearchForm from '../currentWeatherSearchForm/CurrentWeatherSearchForm';
-import CurrentWeatherMinimumData from '../currentWeatherMinimumData/CurrentWeatherMinimumData';
+import AppHeader from '../appHeader/AppHeader';
+import {PageMain, PageHourlyForecast} from '../pages'; // подключаем страницы
 
 import CurrentWeatherMaximumData from '../currentWeatherMaximumData/CurrentWeatherMaximumData';
 
-import HourlyForecastMinimumData from '../hourlyForecastMinimumData/HourlyForecastMinimumData';
 import HourlyForecastMaximumData from '../hourlyForecastMaximumData/HourlyForecastMaximumData';
-
-import HourlyForecastSearchForm from '../hourlyForecastSearchForm/HourlyForecastSearchForm';
 
 import ErrorBoundary from '../errorBoundary/ErrorBoundary';
 
@@ -16,22 +17,36 @@ import ErrorBoundary from '../errorBoundary/ErrorBoundary';
 
 const App = () => {
     return (
-        <div>
-            <AppHeader/>
+        <Router>
+            <div>
+                <AppHeader/>
 
-            <main>
+                <main>
+                    <Switch>
+                        <Route exact path="/">
+                            <PageMain/>
+                        </Route>
 
-                <ErrorBoundary>
-                    <HourlyForecastMinimumData/>
-                </ErrorBoundary>
+                        <Route exact path="/current-weather-detailed">
+                            <ErrorBoundary>
+                                <CurrentWeatherMaximumData/>
+                            </ErrorBoundary>
+                        </Route>
 
-                <ErrorBoundary>
-                    <HourlyForecastMaximumData/>
-                </ErrorBoundary>
+                        <Route exact path="/hourly-forecast">
+                            <PageHourlyForecast/>
+                        </Route>
 
-            </main>
+                        <Route exact path="/hourly-forecast-detailed">
+                            <ErrorBoundary>
+                                <HourlyForecastMaximumData/>
+                            </ErrorBoundary>
+                        </Route>
+                    </Switch>
+                </main>
 
-        </div>
+            </div>
+        </Router>
     )
 }
 
