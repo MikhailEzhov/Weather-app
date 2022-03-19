@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from "react-router-dom"; // для маршрутизации, чтобы перенаправлять
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -11,40 +12,40 @@ import './hourlyForecastData.scss';
 const HourlyForecastMinimumData = () => {
 
 
-    // состояния:
-    const [hourlyForecast, setHourlyForecast] = useState(null);   // почасовой прогноз
-
-
     // подключаем сущьности из кастомного хука useWeatherService:
     const {loading, error, clearError, getHourlyForecastByCity} = useWeatherService();
 
 
+    // состояния:
+    const [city, setCity] = useState(null);
+
+
     // эффект:
     useEffect(() => {
-        updateHourlyForecast();            // обновление
-    }, [])                                 // выполнится только один раз, нет слежения за состояниями
+        updateCity();            // обновление
+    }, [])                       // выполнится только один раз, нет слежения за состояниями
 
 
-    // когда почасовой прогноз загрузился:
-    const onHourlyForecastLoaded = (hourlyForecast) => {
-        // меняем состояния:
-        setHourlyForecast(hourlyForecast);
+    // обновление города:
+    const updateCity = () => {
+        clearError();                        // очищаем ошибки, если они возникли когда данных с сервера не было
+        const cityX = 'Perm';  
+        getHourlyForecastByCity(cityX)       // запускаем метод для получения почасового прогноза по городу
+            .then(onCityLoaded)    // при положительном ответе (запустится это)
     }
 
 
-    // обновление почасового прогноза:
-    const updateHourlyForecast = () => {
-        clearError();                        // очищаем ошибки, если они возникли когда данных с сервера не было
-        const city = 'Perm';
-        getHourlyForecastByCity(city)        // запускаем метод для получения почасового прогноза по городу
-            .then(onHourlyForecastLoaded)    // при положительном ответе (запустится это)
+    // когда город загрузился:
+    const onCityLoaded = (city) => {
+        // меняем состояния:
+        setCity(city);
     }
 
 
     const errorMessage = error ? <ErrorMessage/> : null; // errorMessage = или компонент с ошибкой, или null
     const spinner = loading ? <Spinner/> : null; // spinner = или компонент с загрузкой, или null
     // контент помещается на страницу, когда нет ошибки, и уже нет загрузки:
-    const content = !(loading || error  || !hourlyForecast) ? <View hourlyForecast={hourlyForecast}/> : null; // content = когда нет ошибки, и уже нет загрузки: или компонент View, или null
+    const content = !(loading || error  || !city) ? <View city={city}/> : null; // content = когда нет ошибки, и уже нет загрузки: или компонент View, или nul
 
 
     return (
@@ -61,7 +62,7 @@ const HourlyForecastMinimumData = () => {
 
 
 // Компонент View - отображает на странице(рендарит):
-const View = ({hourlyForecast}) => { // принимает в себя объект с почасовыми прогнозами
+const View = ({city}) => { // принимает в себя объект
     const {name, 
         country, 
         date0,
@@ -74,7 +75,7 @@ const View = ({hourlyForecast}) => { // принимает в себя объе�
         temp2,
         temp3,
         temp4,
-    } = hourlyForecast; // диструктуризация
+    } = city; // диструктуризация
 
     return (
         <table className="hourly-forecast__table">
@@ -109,7 +110,7 @@ const View = ({hourlyForecast}) => { // принимает в себя объе�
             <tfoot>
                 <tr>
                     <th colSpan="10">
-                        <button className="hourly-forecast__table-button">detail</button>
+                        <Link to={`/hourly-forecast-detailed/${name}`} className="hourly-forecast__table-button">detail</Link>
                     </th>
                 </tr>
             </tfoot>

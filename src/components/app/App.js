@@ -4,14 +4,15 @@ import {
     Route
 } from "react-router-dom"; // подключили компоненты из пакета для маршрутизации
 
+import {
+    PageMain, 
+    PageHourlyForecast,
+    Page404,
+    PageCurrentWeatherDetailed,
+    PageHourlyForecastDetailed,
+} from '../pages'; // подключаем страницы
+
 import AppHeader from '../appHeader/AppHeader';
-import {PageMain, PageHourlyForecast} from '../pages'; // подключаем страницы
-
-import CurrentWeatherMaximumData from '../currentWeatherMaximumData/CurrentWeatherMaximumData';
-
-import HourlyForecastMaximumData from '../hourlyForecastMaximumData/HourlyForecastMaximumData';
-
-import ErrorBoundary from '../errorBoundary/ErrorBoundary';
 
 
 
@@ -23,25 +24,33 @@ const App = () => {
 
                 <main>
                     <Switch>
+
+
                         <Route exact path="/">
                             <PageMain/>
                         </Route>
 
-                        <Route exact path="/current-weather-detailed">
-                            <ErrorBoundary>
-                                <CurrentWeatherMaximumData/>
-                            </ErrorBoundary>
+
+                        <Route exact path="/current-weather-detailed/:cityNameCW">
+                            <PageCurrentWeatherDetailed/>
                         </Route>
+
 
                         <Route exact path="/hourly-forecast">
                             <PageHourlyForecast/>
                         </Route>
 
-                        <Route exact path="/hourly-forecast-detailed">
-                            <ErrorBoundary>
-                                <HourlyForecastMaximumData/>
-                            </ErrorBoundary>
+
+                        <Route exact path="/hourly-forecast-detailed/:cityNameHF">
+                            <PageHourlyForecastDetailed/>
                         </Route>
+
+
+                        <Route path="*">
+                            <Page404/>
+                        </Route>
+
+
                     </Switch>
                 </main>
 

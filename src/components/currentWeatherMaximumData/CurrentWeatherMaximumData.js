@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom'; // для маршрутизации
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -11,40 +12,43 @@ import '../currentWeatherMinimumData/currentWeatherData.scss';
 const CurrentWeatherMaximumData = () => {
 
 
-    // состояния:
-    const [currentWeather, setCurrentWeather] = useState(null);   // текущая погода
+    // путь, из хука маршрутизации:
+    const {cityNameCW} = useParams(); // для динамического пути, в App.js создали путь path="/current-weather-detailed/:cityNameCW" , и тут cityNameCW вытаскиваем
 
 
     // подключаем сущьности из кастомного хука useWeatherService:
     const {loading, error, clearError, getCurrentWeatherByCity} = useWeatherService();
 
 
+    // состояния:
+    const [city, setCity] = useState(null);
+
+
     // эффект:
     useEffect(() => {
-        updateCurrentWeather();            // обновление
-    }, [])                                 // выполнится только один раз, нет слежения за состояниями
+        updateCity();            // обновление
+    }, [cityNameCW])             // выполнится первый раз после рендаринга компонента, затем будет обновляться при изменении состояния
 
 
-    // когда текущая погода загрузилась:
-    const onCurrentWeatherLoaded = (currentWeather) => {
-        // меняем состояния:
-        setCurrentWeather(currentWeather);
+    // обновление города:
+    const updateCity = () => {
+        clearError();                        // очищаем ошибки, если они возникли когда данных с сервера не было  
+        getCurrentWeatherByCity(cityNameCW)  // запускаем метод для получения текущей погоды по городу
+            .then(onCityLoaded)              // при положительном ответе (запустится это)
     }
 
 
-    // обновление текущей погоды:
-    const updateCurrentWeather = () => {
-        clearError();                        // очищаем ошибки, если они возникли когда данных с сервера не было
-        const city = 'Perm';   
-        getCurrentWeatherByCity(city)        // запускаем метод для получения текущей погоды по городу
-            .then(onCurrentWeatherLoaded)    // при положительном ответе (запустится это)
+    // когда город загрузился:
+    const onCityLoaded = (city) => {
+        // меняем состояния:
+        setCity(city);
     }
 
 
     const errorMessage = error ? <ErrorMessage/> : null; // errorMessage = или компонент с ошибкой, или null
     const spinner = loading ? <Spinner/> : null; // spinner = или компонент с загрузкой, или null
     // контент помещается на страницу, когда нет ошибки, и уже нет загрузки:
-    const content = !(loading || error  || !currentWeather) ? <View currentWeather={currentWeather}/> : null; // content = когда нет ошибки, и уже нет загрузки: или компонент View, или null
+    const content = !(loading || error  || !city) ? <View city={city}/> : null; // content = когда нет ошибки, и уже нет загрузки: или компонент View, или null
 
 
     return (
@@ -61,8 +65,8 @@ const CurrentWeatherMaximumData = () => {
 
 
 // Компонент View - отображает на странице(рендарит):
-const View = ({currentWeather}) => { // принимает в себя объект с текущей погодой
-    const {name, country, icon, description, temp, feelsLike, wind, humidity, pressure} = currentWeather;
+const View = ({city}) => { // принимает в себя объект
+    const {name, country, icon, description, temp, feelsLike, wind, humidity, pressure} = city; // диструктуризация
 
     return (
         <table className="current-weather__table">
